@@ -1,0 +1,30 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="APIGen_PolCovid.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="PathWriteFilePolicyCovid" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">N:/nonmotdrive/CovidFilePolicy/</Value>
+    </Setting>
+    <Setting Name="PathWriteFilePolicyCovid_Dev" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">D:/CovidFilePolicy/</Value>
+    </Setting>
+    <Setting Name="PathWriteFilePolicyCovid_Pro" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">N:/nonmotdrive/CovidFilePolicy/</Value>
+    </Setting>
+    <Setting Name="PathWriteFilePolicyCovid_UAT" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">N:/nonmotdrive/test/</Value>
+    </Setting>
+    <Setting Name="Url_Js2" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://jasper2.smk.co.th:8080/jasperserver/rest_v2/reports/reports/DEV/Nonmotor</Value>
+    </Setting>
+    <Setting Name="Url_Js3" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://jasper3.smk.co.th:8080/jasperserver/rest_v2/reports/reports/DEV/Nonmotor</Value>
+    </Setting>
+    <Setting Name="Url_JsDev" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://jasper3.smk.co.th:8080/jasperserver/rest_v2/reports/reports/DEV/Nonmotor</Value>
+    </Setting>
+    <Setting Name="Url_JsPro" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://jasper3.smk.co.th:8080/jasperserver/rest_v2/reports/reports/interactive/Nonmotor</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
