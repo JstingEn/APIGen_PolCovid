@@ -58,6 +58,7 @@ namespace APIGen_PolCovid.Controllers
         }
 
         [HttpPost]
+        [Route("Post/PolicyCovidRange")]
         [Route("Post/PolicyCovidRange/{SeverJs}")]
         public HttpResponseMessage PolicyCovidRange([FromBody] object _Reqbody, string SeverJs = null)
         {
