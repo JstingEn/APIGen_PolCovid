@@ -29,7 +29,6 @@ namespace APIGen_PolCovid.Controllers
 
         HttpResponseMessage _response = new HttpResponseMessage();
         [HttpGet]
-
         [Route("Get/PolicyCovid/{policy}")]
         [Route("Get/PolicyCovid/{policy}/{password}")]
         [Route("Get/PolicyCovid/SEL/{SeverJs}/{policy}")]
@@ -60,11 +59,11 @@ namespace APIGen_PolCovid.Controllers
         [HttpPost]
         [Route("Post/PolicyCovidRange")]
         [Route("Post/PolicyCovidRange/{SeverJs}")]
-        public HttpResponseMessage PolicyCovidRange([FromBody] object _Reqbody, string SeverJs = null)
+        public HttpResponseMessage PolicyCovidRange([FromBody] DataTable _Reqbody, string SeverJs = null)
         {
             if (SeverJs == "JS2") SvJs = "JS2";
             else SvJs = "JS3";
-            DataTable ReqBody = new DataTable();
+            DataTable ReqBody = _Reqbody;
             DataTable _ReData = new DataTable();
             DataTable _ReData1 = new DataTable();
             //============================================//
@@ -76,12 +75,8 @@ namespace APIGen_PolCovid.Controllers
             _ReData.Columns.Add("Policy");
             _ReData.Columns.Add("Pol_Type");
             _ReData.Columns.Add("LocalPath");
-            string inJson = "";
-            //============================================//
-            //           SET ReqBody  TO DATATABLE
-            //============================================//
-            ObjConvertJson(ref inJson, _Reqbody);
-            ReqBody = JsonConvert.DeserializeObject<DataTable>(inJson);
+
+
             GENFILEPOLCOVID_RANGE("Policy", ReqBody, _ReData);
             GENFILEPOLCOVID_RANGE("ePolicy", ReqBody, _ReData);
             foreach (DataRow _dr in ReqBody.Rows)
@@ -155,12 +150,10 @@ namespace APIGen_PolCovid.Controllers
         #region GENFILEPOLCOVID_RANGE
         public void GENFILEPOLCOVID_RANGE(string FlagType_Pol, DataTable ReqBody, DataTable Pass)
         {
-
             DataTable _ReData = new DataTable();
             ClsCer CC = new ClsCer();
             string PathFolderS = RootPathFilePolCovid;
             string pols = "";
-
             List<string> _list_Pol = new List<string>();
             try
             {
@@ -174,8 +167,6 @@ namespace APIGen_PolCovid.Controllers
                     string pol = _dr["policy"].ToString()
                         , LocalPath = _dr["physical_path"].ToString()
                         , PDFNAME = _dr["file_name"].ToString();
-
-
                     pols = pols + ((pols == "") ? pols = pol : "," + pol);
 
                     if (!Directory.Exists(LocalPath))
@@ -272,9 +263,6 @@ namespace APIGen_PolCovid.Controllers
                         MergePage(_list, _dr["physical_path"].ToString(), _file_Pol);
                         Pass.Rows.Add(_dr["policy"].ToString(), "Policy", _dr["physical_path"].ToString());
                     }
-
-
-
                 }
                 //BytStr = GenFileFromJsper(policy, password);
             }
@@ -404,7 +392,7 @@ namespace APIGen_PolCovid.Controllers
         {
             string vp_output_file = string.Empty;
             string par = GenParam(pl);
-            string _url  = urlJs3 + PahtFout + par;
+            string _url = urlJs3 + PahtFout + par;
             if (SvJs == "JS3") _url = urlJs3 + PahtFout + par;
             else if (SvJs == "JS2") _url = urlJs2 + PahtFout + par;
             Stream stream = null;
@@ -426,7 +414,6 @@ namespace APIGen_PolCovid.Controllers
             if (httpResponse.StatusCode == HttpStatusCode.OK)
             {
                 //vp_output_file = PahtFin + Name;
-
                 stream = httpResponse.GetResponseStream();
                 BinaryReader breader = new BinaryReader(stream);
                 buffer = breader.ReadBytes((int)httpResponse.ContentLength);
@@ -469,14 +456,11 @@ namespace APIGen_PolCovid.Controllers
             httpRequest.KeepAlive = true;
             httpRequest.ProtocolVersion = HttpVersion.Version10;
             httpRequest.Timeout = 10 * 60 * 1000; // 10 sec. time out setting
-
             httpResponse = (HttpWebResponse)httpRequest.GetResponse();
 
             if (httpResponse.StatusCode == HttpStatusCode.OK)
             {
                 vp_output_file = PahtFin + Name;
-
-
                 using (Stream stream = httpResponse.GetResponseStream())
                 {
                     using (Stream destination = File.Create(vp_output_file))
@@ -612,7 +596,7 @@ namespace APIGen_PolCovid.Controllers
         #endregion
 
         [Route("Post/ZipPolicyCovid")]
-        public HttpResponseMessage ZipPolicyCovid([FromBody] object _Reqbody)
+        public HttpResponseMessage ZipPolicyCovid([FromBody] DataTable _Reqbody)
         {
 
             _response = new HttpResponseMessage();
@@ -622,30 +606,44 @@ namespace APIGen_PolCovid.Controllers
             string _type = "";
             try
             {
-                string inJson = "";
-                ObjConvertJson(ref inJson, _Reqbody);
-                DataTable _dt = JsonConvert.DeserializeObject<DataTable>(inJson);
+
+                DataTable _dt = _Reqbody;
                 if (_dt.Rows.Count > 1)
                 {
-                    string _Fliename = "CVP" + DateTime.Now.ToString("ddMMyyyHHmmss") + ".zip";
+                    string _Fliename = "CVP" + DateTime.Now.ToString("ddMMyyyHHmmssfff") + ".zip";
                     string FileOutPut = RootPathFilePolCovid + _Fliename;
 
                     ZipFile MyZip;
                     MyZip = ZipFile.Create(FileOutPut);
-                    MyZip.BeginUpdate();
-                    foreach (DataRow _dr in _dt.Rows)
+                    try
                     {
-                        string Path = _dr["physical_path"].ToString()
-                            , Filename = _dr["policy_no"].ToString() + ".pdf";
-                        MyZip.Add(Path, Filename);
+                        MyZip.BeginUpdate();
+                        foreach (DataRow _dr in _dt.Rows)
+                        {
+                            string Path = _dr["physical_path"].ToString()
+                                , Filename = _dr["policy_no"].ToString() + ".pdf";
+                            MyZip.Add(Path, Filename);
 
+                        }
+                        MyZip.CommitUpdate();
+
+                        MyZip.Close();
+                        Resulte = File.ReadAllBytes(FileOutPut);
+                        _type = MimeMapping.GetMimeMapping(Path.GetExtension(FileResulte));
+                        File.Delete(FileOutPut);
                     }
-                    MyZip.CommitUpdate();
+                    catch (Exception)
+                    {
+                        _response.StatusCode = HttpStatusCode.InternalServerError;
+                    }
 
-                    MyZip.Close();
-                    Resulte = File.ReadAllBytes(FileOutPut);
-                    _type = MimeMapping.GetMimeMapping(Path.GetExtension(FileResulte));
-                    File.Delete(FileOutPut);
+                    finally
+                    {
+                        if (MyZip != null)
+                        {
+                            MyZip.Close();
+                        }
+                    }
                 }
                 else
                 {
@@ -665,6 +663,8 @@ namespace APIGen_PolCovid.Controllers
             {
                 _response.StatusCode = HttpStatusCode.InternalServerError;
             }
+
+
 
             _response.Content = new ByteArrayContent(Resulte);
             _response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(_type);
