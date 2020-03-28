@@ -224,7 +224,7 @@ namespace APIGen_PolCovid.Controllers
         #region GENFILEPOLCOVID_RANGE
         public void GENFILEPOLCOVID_RANGE(string FlagType_Pol, DataTable ReqBody, DataTable Pass)
         {
-            HttpResponseMessage _response = new HttpResponseMessage();
+        
             DataTable _ReData = new DataTable();
             ClsCer CC = new ClsCer();
             string PathFolderS = RootPathFilePolCovid;
