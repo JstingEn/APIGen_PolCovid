@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="PathWriteFilePolicyCovid" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">N:/nonmotdrive/CovidFilePolicy/</Value>
+      <Value Profile="(Default)">D:/CovidFilePolicy/</Value>
     </Setting>
     <Setting Name="PathWriteFilePolicyCovid_Dev" Type="System.String" Scope="Application">
       <Value Profile="(Default)">D:/CovidFilePolicy/</Value>

@@ -25,7 +25,7 @@ namespace APIGen_PolCovid.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("N:/nonmotdrive/CovidFilePolicy/")]
+        [global::System.Configuration.DefaultSettingValueAttribute("D:/CovidFilePolicy/")]
         public string PathWriteFilePolicyCovid {
             get {
                 return ((string)(this["PathWriteFilePolicyCovid"]));

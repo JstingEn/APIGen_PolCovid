@@ -27,7 +27,7 @@ namespace APIGen_PolCovid.Controllers
         //@" http://jasper.smk.co.th:8080/jasperserver/rest_v2/reports/reports/DEV/Nonmotor";
         ////string url = @" http://jasper.smk.co.th:8080/jasperserver/rest_v2/reports/reports/interactive/Nonmotor";
 
-        HttpResponseMessage _response = new HttpResponseMessage();
+
         [HttpGet]
         [Route("Get/PolicyCovid/{policy}")]
         [Route("Get/PolicyCovid/{policy}/{password}")]
@@ -35,21 +35,20 @@ namespace APIGen_PolCovid.Controllers
         [Route("Get/PolicyCovid/SEL/{SeverJs}/{policy}/{password}")]
         public HttpResponseMessage GenPolicyCovid(string policy, string password = null, string SeverJs = null)
         {
+            HttpResponseMessage _response = new HttpResponseMessage();
             if (SeverJs == "JS2") SvJs = "JS2";
             else SvJs = "JS3";
-            _response = new HttpResponseMessage();
             _response.StatusCode = HttpStatusCode.InternalServerError;
             byte[] BytStr = null;
             try
             {
                 BytStr = GenFileFromJsper(policy, password);
+                _response.StatusCode = HttpStatusCode.OK;
             }
             catch (Exception e)
             {
-
+                _response.StatusCode = HttpStatusCode.InternalServerError;
             }
-            //   HttpResponseMessage _response = new HttpResponseMessage(HttpStatusCode.OK);
-            _response.StatusCode = HttpStatusCode.OK;
             _response.Content = new ByteArrayContent(BytStr);  //new  new StreamContent(new FileStream(pdfFilePath, FileMode.Open, FileAccess.Read));
             _response.Content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment");
             return _response;
@@ -61,6 +60,7 @@ namespace APIGen_PolCovid.Controllers
         [Route("Post/PolicyCovidRange/{SeverJs}")]
         public HttpResponseMessage PolicyCovidRange([FromBody] DataTable _Reqbody, string SeverJs = null)
         {
+            HttpResponseMessage _response = new HttpResponseMessage();
             if (SeverJs == "JS2") SvJs = "JS2";
             else SvJs = "JS3";
             DataTable ReqBody = _Reqbody;
@@ -88,13 +88,87 @@ namespace APIGen_PolCovid.Controllers
             return _response;
         }
 
+
+        [Route("Post/ZipPolicyCovid")]
+        public HttpResponseMessage ZipPolicyCovid([FromBody] DataTable _Reqbody)
+        {
+            HttpResponseMessage _response = new HttpResponseMessage();
+            byte[] Resulte = null;
+            string FileResulte = "";
+            string _type = "";
+            try
+            {
+
+                DataTable _dt = _Reqbody;
+                if (_dt.Rows.Count > 1)
+                {
+                    string _Fliename = "CVP" + DateTime.Now.ToString("ddMMyyyHHmmssfff") + ".zip";
+                    string FileOutPut = RootPathFilePolCovid + _Fliename;
+
+                    ZipFile MyZip;
+                    MyZip = ZipFile.Create(FileOutPut);
+                    try
+                    {
+                        MyZip.BeginUpdate();
+                        foreach (DataRow _dr in _dt.Rows)
+                        {
+                            string Path = _dr["physical_path"].ToString()
+                                , Filename = _dr["policy_no"].ToString() + ".pdf";
+                            MyZip.Add(Path, Filename);
+
+                        }
+                        MyZip.CommitUpdate();
+
+                        MyZip.Close();
+                        Resulte = File.ReadAllBytes(FileOutPut);
+                        _type = MimeMapping.GetMimeMapping(Path.GetExtension(FileResulte));
+                        File.Delete(FileOutPut);
+                    }
+                    catch (Exception)
+                    {
+                        _response.StatusCode = HttpStatusCode.InternalServerError;
+                    }
+
+                    finally
+                    {
+                        if (MyZip != null)
+                        {
+                            MyZip.Close();
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (DataRow _dr in _dt.Rows)
+                    {
+                        string _Path = _dr["physical_path"].ToString()
+                            , Filename = _dr["policy_no"].ToString() + ".pdf";
+                        FileResulte = _Path;
+                        _type = MimeMapping.GetMimeMapping(Path.GetExtension(FileResulte));
+                        Resulte = File.ReadAllBytes(FileResulte);
+                    }
+
+                }
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Content = new ByteArrayContent(Resulte);
+                _response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(_type);
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+            }
+
+
+            return _response;
+        }
+
         #region Zip
         [HttpPost]
         [Route("Post/ZipPolicyCovidOld")]
         public HttpResponseMessage ZipPolicyCovidNotCer([FromBody] object _Reqbody)
         {
 
-            _response = new HttpResponseMessage();
+            HttpResponseMessage _response = new HttpResponseMessage();
 
             byte[] Resulte = null;
             try
@@ -150,6 +224,7 @@ namespace APIGen_PolCovid.Controllers
         #region GENFILEPOLCOVID_RANGE
         public void GENFILEPOLCOVID_RANGE(string FlagType_Pol, DataTable ReqBody, DataTable Pass)
         {
+            HttpResponseMessage _response = new HttpResponseMessage();
             DataTable _ReData = new DataTable();
             ClsCer CC = new ClsCer();
             string PathFolderS = RootPathFilePolCovid;
@@ -157,8 +232,6 @@ namespace APIGen_PolCovid.Controllers
             List<string> _list_Pol = new List<string>();
             try
             {
-                _response = new HttpResponseMessage();
-
                 //===================================================
                 //                  ต่อเลขกรมธรรม์
                 //===================================================
@@ -595,81 +668,6 @@ namespace APIGen_PolCovid.Controllers
         }
         #endregion
 
-        [Route("Post/ZipPolicyCovid")]
-        public HttpResponseMessage ZipPolicyCovid([FromBody] DataTable _Reqbody)
-        {
-
-            _response = new HttpResponseMessage();
-
-            byte[] Resulte = null;
-            string FileResulte = "";
-            string _type = "";
-            try
-            {
-
-                DataTable _dt = _Reqbody;
-                if (_dt.Rows.Count > 1)
-                {
-                    string _Fliename = "CVP" + DateTime.Now.ToString("ddMMyyyHHmmssfff") + ".zip";
-                    string FileOutPut = RootPathFilePolCovid + _Fliename;
-
-                    ZipFile MyZip;
-                    MyZip = ZipFile.Create(FileOutPut);
-                    try
-                    {
-                        MyZip.BeginUpdate();
-                        foreach (DataRow _dr in _dt.Rows)
-                        {
-                            string Path = _dr["physical_path"].ToString()
-                                , Filename = _dr["policy_no"].ToString() + ".pdf";
-                            MyZip.Add(Path, Filename);
-
-                        }
-                        MyZip.CommitUpdate();
-
-                        MyZip.Close();
-                        Resulte = File.ReadAllBytes(FileOutPut);
-                        _type = MimeMapping.GetMimeMapping(Path.GetExtension(FileResulte));
-                        File.Delete(FileOutPut);
-                    }
-                    catch (Exception)
-                    {
-                        _response.StatusCode = HttpStatusCode.InternalServerError;
-                    }
-
-                    finally
-                    {
-                        if (MyZip != null)
-                        {
-                            MyZip.Close();
-                        }
-                    }
-                }
-                else
-                {
-                    foreach (DataRow _dr in _dt.Rows)
-                    {
-                        string _Path = _dr["physical_path"].ToString()
-                            , Filename = _dr["policy_no"].ToString() + ".pdf";
-                        FileResulte = _Path;
-                        _type = MimeMapping.GetMimeMapping(Path.GetExtension(FileResulte));
-                        Resulte = File.ReadAllBytes(FileResulte);
-                    }
-
-                }
-                _response.StatusCode = HttpStatusCode.OK;
-            }
-            catch (Exception ex)
-            {
-                _response.StatusCode = HttpStatusCode.InternalServerError;
-            }
-
-
-
-            _response.Content = new ByteArrayContent(Resulte);
-            _response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(_type);
-            return _response;
-        }
 
 
     }
