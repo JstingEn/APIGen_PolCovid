@@ -25,7 +25,7 @@ namespace APIGen_PolCovid.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("D:/CovidFilePolicy/")]
+        [global::System.Configuration.DefaultSettingValueAttribute("N:/nonmotdrive/CovidFilePolicy/")]
         public string PathWriteFilePolicyCovid {
             get {
                 return ((string)(this["PathWriteFilePolicyCovid"]));
@@ -61,8 +61,7 @@ namespace APIGen_PolCovid.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://jasper2.smk.co.th:8080/jasperserver/rest_v2/reports/reports/interactive/No" +
-            "nmotor")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://jasper1.smk.co.th:8080/jasperserver/rest_v2/reports/reports/DEV/Nonmotor")]
         public string Url_Js2 {
             get {
                 return ((string)(this["Url_Js2"]));
@@ -71,8 +70,7 @@ namespace APIGen_PolCovid.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://jasper3.smk.co.th:8080/jasperserver/rest_v2/reports/reports/interactive/No" +
-            "nmotor")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://jasper3.smk.co.th:8080/jasperserver/rest_v2/reports/reports/DEV/Nonmotor")]
         public string Url_Js3 {
             get {
                 return ((string)(this["Url_Js3"]));

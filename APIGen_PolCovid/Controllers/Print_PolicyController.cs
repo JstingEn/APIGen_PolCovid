@@ -63,7 +63,9 @@ namespace APIGen_PolCovid.Controllers
             HttpResponseMessage _response = new HttpResponseMessage();
             if (SeverJs == "JS2") SvJs = "JS2";
             else SvJs = "JS3";
-            DataTable ReqBody = _Reqbody;
+            DataView _dv = new DataView(_Reqbody);
+            _dv.Sort = "policy ASC";
+            DataTable ReqBody = _dv.ToTable();
             DataTable _ReData = new DataTable();
             DataTable _ReData1 = new DataTable();
             //============================================//
@@ -280,7 +282,7 @@ namespace APIGen_PolCovid.Controllers
                 string file2 = ExportReport("/JRpt_602_receipt.PDF", PathFolderS, file_receipt, DataREC);
                 string file3 = ExportReport("/JRpt_696/JRpt_696_attached.PDF", PathFolderS, file_attached, DataAt);
                 //======================================================
-                //                   จำนวจหน้าที่ต้องแยก 
+                //                   จำนวหน้าที่ต้องแยก 
                 //======================================================
                 List<string> _list = new List<string>();
                 _list.Add(file_policy);
